@@ -1,0 +1,6 @@
+{
+  "name": "casco-ciclista-ra",
+  "version": "1.0.0",
+  "scripts": { "start": "http-server public -p 8000 -a 0.0.0.0" },
+  "devDependencies": { "http-server": "^14.1.1" }
+}
