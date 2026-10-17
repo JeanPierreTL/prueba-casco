@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Libro: Casco inteligente de ciclista</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
+  <script src="js/casco.js"></script>
+  <script src="js/libro.js" defer></script>
+</head>
+<body>
+  <!-- Cámara + RA a pantalla completa (se ve a través de la ventana del libro) -->
+  <a-scene embedded vr-mode-ui="enabled: false"
+    renderer="alpha: true; antialias: true"
+    arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-marker id="marcador" preset="hiro" emitevents="true">
+      <a-entity id="sistema" casco-ciclista
+        position="0 0.35 0" scale="0.8 0.8 0.8"></a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- El libro: cubierta opaca con un hueco sobre la ventana de escaneo -->
+  <div id="cubierta">
+    <main id="libro">
+
+      <!-- Página izquierda: decoración + pregunta -->
+      <section class="pag izq" aria-label="Página izquierda">
+        <div class="deco">
+          <div class="adorno">✦ ✦ ✦</div>
+          <div id="numGrande">1</div>
+          <div class="adorno">❦</div>
+          <h2>Para pensar</h2>
+          <p id="preguntaIzq"></p>
+          <div class="nota">Centra el marcador Hiro en la ventana de la página derecha.</div>
+        </div>
+      </section>
+
+      <div class="lomo"></div>
+
+      <!-- Página derecha: título, ventana de escaneo, descripción -->
+      <section class="pag der" aria-label="Página derecha">
+        <header id="cabeza">
+          <span id="numPag">Página 1 de 5</span>
+          <h1 id="tit"></h1>
+        </header>
+
+        <div id="ventana" aria-label="Ventana de escaneo"></div>
+
+        <div id="pie">
+          <p id="desc"></p>
+          <ul id="detalles"></ul>
+          <p id="preguntaMovil" class="pregunta"></p>
+
+          <div id="controlInc">
+            <label for="inclinacion">Inclinación: <b id="valorAngulo">0</b>° (− izq. / + der.)</label>
+            <input id="inclinacion" type="range" min="-45" max="45" value="0">
+          </div>
+
+          <p id="estado" role="status"></p>
+          <button id="pausa" type="button">Pausar</button>
+        </div>
+
+        <nav id="nav">
+          <button id="prev" type="button" aria-label="Página anterior">‹ Anterior</button>
+          <span id="indicador">1 / 5</span>
+          <button id="next" type="button" aria-label="Página siguiente">Siguiente ›</button>
+        </nav>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Marco guía sobre la ventana -->
+  <div id="guia"><span class="hint" id="hint">Enfoca el marcador Hiro aquí</span></div>
+</body>
+</html>
