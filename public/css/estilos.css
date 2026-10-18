@@ -1,0 +1,237 @@
+/* ============================================================
+   Libro con RA — dos páginas: izquierda decorativa, derecha con
+   título, cámara (visor RA) y descripción.
+   El video y la escena de AR.js son "fixed" y se colocan encima
+   del hueco #visor mediante las variables --vx --vy --vw --vh,
+   que calcula libro.js. No uses transform en .pagina ni #libro,
+   o el video quedaría desalineado.
+   ============================================================ */
+ 
+:root {
+  --fondo: #0a1722;
+  --papel: #eaf0f1;
+  --papel-sombra: #d3dfe2;
+  --tinta: #12283a;
+  --tinta-suave: #4a6072;
+  --azul: #1e88e5;
+  --ambar: #ffa000;
+  --linea: #b7c6cc;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --alto-libro: 100dvh;
+ 
+  /* Marco del visor (se sobrescribe desde libro.js) */
+  --vx: 0px; --vy: 0px; --vw: 100vw; --vh: 75vw;
+}
+ 
+* { box-sizing: border-box; }
+ 
+html, body {
+  width: 100%; height: 100%; margin: 0; overflow: hidden;
+  background: var(--fondo); color: var(--tinta);
+  font-family: var(--sans);
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+}
+body { display: grid; place-items: center; }
+ 
+/* ---------- Libro ---------- */
+#libro {
+  display: grid; grid-template-columns: 1fr;
+  width: 100%; max-width: 560px; height: var(--alto-libro);
+}
+.pagina { position: relative; background: var(--papel); min-height: 0; }
+ 
+/* ---------- Página izquierda (decoración) ---------- */
+.izquierda {
+  display: none;
+  background-color: var(--papel);
+  background-image:
+    linear-gradient(var(--papel-sombra) 1px, transparent 1px),
+    linear-gradient(90deg, var(--papel-sombra) 1px, transparent 1px);
+  background-size: 28px 28px;
+  border-radius: 14px 0 0 14px;
+}
+.deco {
+  height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px;
+  padding: 40px 36px; text-align: center;
+}
+.numeral {
+  font-family: var(--serif); font-size: 120px; line-height: 1;
+  font-weight: 700; color: var(--tinta); margin: 0;
+}
+.dibujo { width: min(100%, 340px); height: auto; color: var(--tinta); }
+.dibujo .ambar { fill: var(--ambar); }
+.dibujo .azul { fill: var(--azul); opacity: .16; }
+.dibujo .verde { fill: #43a047; }
+.dibujo text { font-family: var(--sans); font-size: 11px; fill: var(--tinta-suave); }
+.pie-figura {
+  margin: 0; max-width: 30ch; font-family: var(--serif);
+  font-style: italic; font-size: 14px; line-height: 1.5; color: var(--tinta-suave);
+}
+ 
+/* ---------- Página derecha ---------- */
+.derecha {
+  display: flex; flex-direction: column; height: 100%;
+  padding: 16px 18px 12px;
+}
+.derecha header { flex: none; padding-bottom: 10px; }
+h1 {
+  margin: 0; font-family: var(--serif); font-size: clamp(22px, 5.6vw, 30px);
+  line-height: 1.15; font-weight: 700; letter-spacing: -.01em;
+}
+ 
+/* Hueco donde se ve la cámara */
+#visor {
+  flex: none; aspect-ratio: 4 / 3; margin: 0 auto;
+  width: min(100%, max(220px, calc((var(--alto-libro) - 330px) * 1.3333)));
+  border-radius: 10px; background: #0b1a26;
+}
+ 
+#detalle {
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: 14px 4px 8px;
+}
+#contenido {
+  margin: 0 0 10px; max-width: 62ch;
+  font-family: var(--serif); font-size: 16px; line-height: 1.6;
+}
+#detalles { list-style: none; margin: 0 0 12px; padding: 0; }
+#detalles li {
+  position: relative; padding: 0 0 6px 18px; max-width: 62ch;
+  font-size: 14px; line-height: 1.5; color: var(--tinta-suave);
+}
+#detalles li::before {
+  content: ""; position: absolute; left: 2px; top: .5em;
+  width: 7px; height: 7px; background: var(--ambar); border-radius: 2px;
+}
+ 
+#controlesPagina { margin: 10px 0; padding-top: 10px; border-top: 1px solid var(--linea); }
+#controlesPagina[hidden] { display: none; }
+#bloqueInclinacion { margin-bottom: 10px; }
+#bloqueInclinacion[hidden] { display: none; }
+#bloqueInclinacion label { display: block; font-size: 14px; margin-bottom: 4px; }
+input[type=range] { width: 100%; accent-color: var(--azul); }
+#estado { margin: 8px 0; font-size: 14px; color: var(--tinta); }
+ 
+button, select { font: inherit; }
+.boton-sec {
+  padding: 8px 14px; border: 1.5px solid var(--tinta); border-radius: 8px;
+  background: transparent; color: var(--tinta); cursor: pointer;
+}
+.boton-sec:hover { background: var(--papel-sombra); }
+ 
+#ajustes { margin-top: 10px; font-size: 14px; }
+#ajustes summary { cursor: pointer; color: var(--tinta-suave); padding: 4px 0; }
+#controlCamara select {
+  display: block; width: 100%; margin: 6px 0; padding: 8px;
+  border: 1.5px solid var(--linea); border-radius: 8px; background: #fff; color: var(--tinta);
+}
+small { display: block; margin-top: 6px; color: var(--tinta-suave); line-height: 1.45; }
+small a { color: var(--azul); }
+ 
+/* ---------- Navegación ---------- */
+#navegacion {
+  flex: none; display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; padding-top: 10px; border-top: 1px solid var(--linea);
+}
+#navegacion button {
+  min-width: 112px; padding: 10px 14px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--tinta); background: transparent; color: var(--tinta);
+  font-weight: 600;
+}
+#siguiente { background: var(--ambar) !important; border-color: var(--ambar) !important; }
+#navegacion button:disabled { opacity: .35; cursor: default; }
+#indicador { font-size: 13px; color: var(--tinta-suave); text-align: center; }
+ 
+:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+ 
+/* ---------- Cámara / AR.js ----------
+   Todo se alinea con el hueco #visor. El video 4:3 llena exactamente
+   ese marco (que también es 4:3), así no se recorta la toma. */
+#escenaRA,
+#arjs-video {
+  position: fixed !important;
+  left: var(--vx) !important; top: var(--vy) !important;
+  width: var(--vw) !important; height: var(--vh) !important;
+  margin: 0 !important; transform: none !important;
+  border-radius: 10px; overflow: hidden;
+}
+#escenaRA .a-canvas {
+  position: absolute !important; left: 0 !important; top: 0 !important;
+  width: 100% !important; height: 100% !important;
+  background: transparent !important; z-index: 1 !important;
+}
+#arjs-video {
+  z-index: 2 !important; object-fit: fill !important;
+  opacity: 1 !important; visibility: visible !important;
+}
+#escenaRA { z-index: 3 !important; background: transparent !important; }
+.a-enter-vr, .a-enter-ar { display: none !important; }
+ 
+/* Guía de escaneo sobre el visor */
+#guiaEscaneo {
+  position: fixed; z-index: 6; pointer-events: none;
+  left: var(--vx); top: var(--vy); width: var(--vw); height: var(--vh);
+  border-radius: 10px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
+}
+#cuadroGuia {
+  position: absolute; left: 50%; top: 50%; height: 62%; aspect-ratio: 1;
+  transform: translate(-50%, -50%); border: 3px dashed rgba(255,255,255,.9);
+  border-radius: 8px;
+}
+#textoGuia {
+  position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+  width: max-content; max-width: 92%; padding: 4px 8px; border-radius: 6px;
+  background: rgba(0,0,0,.72); color: #fff; font-size: 12px;
+}
+body.marcador-detectado #cuadroGuia {
+  border-color: #5cff76; box-shadow: 0 0 12px rgba(92,255,118,.8);
+}
+ 
+/* ---------- Cambio de página ---------- */
+@keyframes entra-sig { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes entra-ant { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+.gira-sig .deco, .gira-sig .derecha header, .gira-sig #detalle { animation: entra-sig .35s ease-out; }
+.gira-ant .deco, .gira-ant .derecha header, .gira-ant #detalle { animation: entra-ant .35s ease-out; }
+ 
+/* ---------- Libro abierto (pantallas anchas) ---------- */
+@media (min-width: 900px) and (min-height: 560px) {
+  :root { --alto-libro: min(760px, 94dvh); }
+  #libro {
+    grid-template-columns: 1fr 1fr; max-width: none;
+    width: min(1120px, 96vw);
+    border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 6px #14293a;
+  }
+  .izquierda { display: block; }
+  .derecha { border-radius: 0 14px 14px 0; padding: 22px 28px 16px; }
+  .izquierda::after, .derecha::before {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 34px; pointer-events: none;
+  }
+  .izquierda::after { right: 0; background: linear-gradient(90deg, transparent, rgba(18,40,58,.22)); }
+  .derecha::before { left: 0; background: linear-gradient(90deg, rgba(18,40,58,.22), transparent); }
+}
+ 
+/* ---------- Celular horizontal (poca altura) ---------- */
+@media (max-height: 520px) and (orientation: landscape) {
+  :root { --alto-libro: 100dvh; }
+  #libro { max-width: none; }
+  .derecha {
+    display: grid; grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr auto; column-gap: 16px;
+    padding: 8px 14px;
+  }
+  .derecha header { grid-column: 1 / -1; padding-bottom: 6px; }
+  h1 { font-size: 20px; }
+  #visor { grid-column: 1; grid-row: 2; align-self: start; width: min(46vw, calc((100dvh - 110px) * 1.3333)); }
+  #detalle { grid-column: 2; grid-row: 2; padding-top: 0; }
+  #navegacion { grid-column: 1 / -1; grid-row: 3; padding-top: 6px; }
+  #navegacion button { padding: 6px 12px; }
+}
+ 
+@media (prefers-reduced-motion: reduce) {
+  .gira-sig .deco, .gira-sig .derecha header, .gira-sig #detalle,
+  .gira-ant .deco, .gira-ant .derecha header, .gira-ant #detalle { animation: none; }
+}
+ 

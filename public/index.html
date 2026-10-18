@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Casco inteligente de ciclista con RA</title>
+  <link rel="stylesheet" href="css/estilos.css?v=8">
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
+  <script src="js/casco.js"></script>
+  <script src="js/libro.js?v=2" defer></script>
+</head>
+<body>
+ 
+  <main id="libro">
+ 
+    <!-- Página izquierda: decoración -->
+    <section class="pagina izquierda" aria-hidden="true">
+      <div class="deco">
+        <p class="numeral" id="numeral">1</p>
+        <svg class="dibujo" viewBox="0 0 300 240" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path class="azul" stroke="none" d="M40 150 A110 110 0 0 1 260 150 Z"/>
+          <path d="M40 150 A110 110 0 0 1 260 150"/>
+          <path d="M34 150 H266"/>
+          <path d="M105 150 L99 168 H201 L195 150"/>
+          <rect class="verde" stroke="none" x="128" y="30" width="44" height="10" rx="2"/>
+          <circle class="ambar" stroke="none" cx="40" cy="146" r="9"/>
+          <circle class="ambar" stroke="none" cx="260" cy="146" r="9"/>
+          <g stroke-width="1.5" stroke-dasharray="5 5" opacity=".7">
+            <path d="M150 16 V196"/>
+            <path d="M150 150 L117.6 29.3"/>
+            <path d="M150 150 L182.4 29.3"/>
+          </g>
+          <text x="96" y="22" stroke="none">−15°</text>
+          <text x="186" y="22" stroke="none">+15°</text>
+        </svg>
+        <p class="pie-figura">Cuando la inclinación pasa de ±15°, se enciende la direccional de ese lado.</p>
+      </div>
+    </section>
+ 
+    <!-- Página derecha: título, cámara y descripción -->
+    <section class="pagina derecha">
+      <header>
+        <h1 id="titulo">El casco</h1>
+      </header>
+ 
+      <!-- Hueco: el video y la escena RA se colocan encima de este espacio -->
+      <div id="visor" aria-label="Cámara para escanear el marcador Hiro"></div>
+ 
+      <div id="detalle">
+        <p id="contenido"></p>
+        <ul id="detalles"></ul>
+ 
+        <div id="controlesPagina">
+          <div id="bloqueInclinacion" hidden>
+            <label for="inclinacion">Inclinación: <span id="valorAngulo">0</span>° (− izquierda / + derecha)</label>
+            <input id="inclinacion" type="range" min="-45" max="45" value="0" disabled>
+          </div>
+          <button id="pausa" class="boton-sec" type="button">Pausar</button>
+        </div>
+ 
+        <p id="estado" role="status">Permite la cámara y enfoca Hiro.</p>
+ 
+        <details id="ajustes">
+          <summary>Ajustes de cámara</summary>
+          <div id="controlCamara">
+            <label for="camara">Cámara del teléfono</label>
+            <select id="camara" disabled>
+              <option>Detectando cámaras…</option>
+            </select>
+            <small>Si la imagen se ve ampliada o borrosa, selecciona otra cámara trasera.</small>
+            <small><a href="marcador.html" target="_blank" rel="noopener">Abrir el marcador Hiro correcto</a></small>
+            <small>Aleja el celular hasta ver completo el cuadrado negro y baja el brillo de la otra pantalla si se ve blanco.</small>
+          </div>
+        </details>
+ 
+        <small>Modelo didáctico: simula el comportamiento del casco real.</small>
+      </div>
+ 
+      <nav id="navegacion" aria-label="Páginas del libro">
+        <button id="anterior" type="button">‹ Anterior</button>
+        <span id="indicador">Página 1 de 5</span>
+        <button id="siguiente" type="button">Siguiente ›</button>
+      </nav>
+    </section>
+ 
+  </main>
+ 
+  <a-scene
+    id="escenaRA"
+    embedded
+    vr-mode-ui="enabled: false"
+    renderer="alpha: true; antialias: false; precision: medium; maxCanvasWidth: 720; maxCanvasHeight: 1280"
+    arjs="sourceType: webcam;
+      debugUIEnabled: false;
+      trackingMethod: artoolkit;
+      detectionMode: mono;
+      sourceWidth: 960; sourceHeight: 720;
+      displayWidth: 960; displayHeight: 720;
+      canvasWidth: 480; canvasHeight: 360;
+      maxDetectionRate: 20">
+ 
+    <a-marker id="marcador" preset="hiro" emitevents="true">
+      <a-entity
+        id="sistema"
+        casco-ciclista
+        position="0 0.35 0"
+        scale="0.8 0.8 0.8">
+      </a-entity>
+    </a-marker>
+ 
+    <a-entity camera></a-entity>
+  </a-scene>
+ 
+  <div id="guiaEscaneo" aria-hidden="true">
+    <span id="cuadroGuia"></span>
+    <span id="textoGuia">Coloca aquí todo el cuadrado Hiro</span>
+  </div>
+ 
+</body>
+</html>
+ 
